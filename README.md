@@ -1,6 +1,6 @@
 # Model Proposal for Blight Spread
 
-_Your Name_
+Michael Borsellino
 
 * Course ID: CMPLXSYS 530,
 * Course Title: Computer Modeling of Complex Systems
