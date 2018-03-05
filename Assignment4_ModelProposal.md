@@ -13,12 +13,12 @@ Michael Borsellino
 ### Goal 
 *****
  
-_Provide a short, 1-3 sentence description of the goal of your model_
+The goal is to model how blight spreads across space in dense urban areas.  I am interested in elucidating the intersection of blight with the built environment as physical decay and with the housing market as decay of value from potential capitalization..  
 
 &nbsp;  
 ### Justification
 ****
-_Short explanation on why you are using ABM_
+The ABM is useful because 
 
 &nbsp; 
 ### Main Micro-level Processes and Macro-level Dynamics of Interest
