@@ -18,7 +18,7 @@ The goal is to model how blight spreads across space in dense urban areas.  I am
 &nbsp;  
 ### Justification
 ****
-The ABM is useful because 
+The ABM is useful because for demonstrating how blight infilitrates and spreads through the environment.  Using relatively simply rules, the ABM is capable of demonstrating complex interactions between agents and their environment.
 
 &nbsp; 
 ### Main Micro-level Processes and Macro-level Dynamics of Interest
@@ -33,10 +33,15 @@ _Short overview of the key processes and/or relationships you are interested in 
 ****
 &nbsp; 
 ### 1) Environment
+
+Boundary conditions are fixed to represent the city boundaries.  
+This model has two dimensions.  A third could be added at a later date to better represent the complexity of urban housing variations.
+
+This is a cellular automata where each cell represents a block of city housing.
+
+
 _Description of the environment in your model. Things to specify *if they apply*:_
 
-* _Boundary conditions (e.g. wrapping, infinite, etc.)_
-* _Dimensionality (e.g. 1D, 2D, etc.)_
 * _List of environment-owned variables (e.g. resources, states, roughness)_
 * _List of environment-owned methods/procedures (e.g. resource production, state change, etc.)_
 
@@ -52,18 +57,7 @@ _Description of the environment in your model. Things to specify *if they apply*
 
 ### 2) Agents
  
- _Description of the "agents" in the system. Things to specify *if they apply*:_
- 
-* _List of agent-owned variables (e.g. age, heading, ID, etc.)_
-* _List of agent-owned methods/procedures (e.g. move, consume, reproduce, die, etc.)_
-
-
-```python
-# Include first pass of the code you are thinking of using to construct your agents
-# This may be a set of "turtle-own" variables and a command in the "setup" procedure, a list, an array, or Class constructor
-# Feel free to include any agent methods/procedures you have so far. Filling in with pseudocode is ok! 
-# NOTE: If using Netlogo, remove "python" from the markdown at the top of this section to get a generic code block
-```
+ There are no agents as this is a cellular automata.
 
 &nbsp; 
 
@@ -95,6 +89,8 @@ _Provide a high level, step-by-step description of your schedule during each "ti
 ### 5) Assessment and Outcome Measures
 
 _What quantitative metrics and/or qualitative features will you use to assess your model outcomes?_
+
+I am most interested in seeing how blight diffuses and clusters in the environment.  
 
 &nbsp; 
 
