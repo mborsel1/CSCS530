@@ -6,8 +6,6 @@ Michael Borsellino
 * Course Title: Computer Modeling of Complex Systems
 * Term: Winter, 2018
 
-
-
 &nbsp; 
 
 ### Goal 
@@ -24,7 +22,7 @@ The ABM is useful because for demonstrating how blight infilitrates and spreads 
 ### Main Micro-level Processes and Macro-level Dynamics of Interest
 ****
 
-_Short overview of the key processes and/or relationships you are interested in using your model to explore. Will likely be something regarding emergent behavior that arises from individual interactions_
+I am interested in seeing how blight spreads and persists over time.  Clustering of blight in certain quadrants will especially important.  I will be assessing how blight spread and blight recovery stabilize each other.
 
 &nbsp; 
 
@@ -37,21 +35,7 @@ _Short overview of the key processes and/or relationships you are interested in 
 Boundary conditions are fixed to represent the city boundaries.  
 This model has two dimensions.  A third could be added at a later date to better represent the complexity of urban housing variations.
 
-This is a cellular automata where each cell represents a block of city housing.
-
-
-_Description of the environment in your model. Things to specify *if they apply*:_
-
-* _List of environment-owned variables (e.g. resources, states, roughness)_
-* _List of environment-owned methods/procedures (e.g. resource production, state change, etc.)_
-
-
-```python
-# Include first pass of the code you are thinking of using to construct your environment
-# This may be a set of "patches-own" variables and a command in the "setup" procedure, a list, an array, or Class constructor
-# Feel free to include any patch methods/procedures you have. Filling in with pseudocode is ok! 
-# NOTE: If using Netlogo, remove "python" from the markdown at the top of this section to get a generic code block
-```
+This is a cellular automata where each cell represents a block of city housing.  Cells can have a state of 0, 1, or 2, representing recovering from blight, unblighted, and blighted and spreading.  (This is largely based off of pycx's host-pathogen model).  
 
 &nbsp; 
 
@@ -65,35 +49,119 @@ _Description of the environment in your model. Things to specify *if they apply*
  
 **_Interaction Topology_**
 
-_Description of the topology of who interacts with whom in the system. Perfectly mixed? Spatial proximity? Along a network? CA neighborhood?_
+Neighborhoods consist of the surround 8 adjacent cells.  That is, blight can spread to an adjacent cell in any direction.
  
 **_Action Sequence_**
 
-_What does an agent, cell, etc. do on a given turn? Provide a step-by-step description of what happens on a given turn for each part of your model_
+A cell on the grid searches it's neighbors.  If it is recovering from blight and adjacent to an unblighted cell, it's chance of becoming unblighted is determined by regrowthRate.  If it is adjacent to a blighted cell, it's chance of chance of becoming blighted (again) is determined by blightRate.  If it is not adjacent to a blighted or an unblighted cell, it remains in the recovering state.  The time order issue here needs improvement.
 
-1. Step 1
-2. Step 2
-3. Etc...
+
+If the cell is unblighted and adjacent to a blighted cell, it's chance of becoming blighted is determined by blightRate.  If it is not adjacent to a blighted cell is remains unblighted.
+
+If the cell is blighted, it transitions to recovering. This needs work, cells should not immediately transition to recovering.
+
+The parameters (blightRate and regrowthRate) as well as the step procedure function are in section 4.
 
 &nbsp; 
 ### 4) Model Parameters and Initialization
 
 _Describe and list any global parameters you will be applying in your model._
 
+The probability of starting as a blighted cell is defined by initProb. There are currently two interacting rates.  First, blightRate, which is how quickly blight spreads to surrounding neighborhoods.  Second, regrowthRate is how quickly blighted neighborhoods recover.  Both of these are adjustable parameters.  Initial conditions are listed below.  
+```python
+width = 50
+height = 50
+initProb = 0.0007
+blightRate = 0.15
+recoveryRate = 0.2
+```
 _Describe how your model will be initialized_
 
+```python
+def bRate (val = blightRate): #rate of blight spread to nearby city blocks, parameter can be changed in model
+
+    global blightRate
+    blightRate = float(val)
+    return val
+
+def rRate (val = recoveryRate): #rate of regrowth of blighted city blocks, parameter can be changed in model
+ 
+    global recoveryRate
+    recoveryRate = float(val)
+    return val
+    
+def init():
+    global time, config, nextConfig
+
+    time = 0
+    
+    config = SP.zeros([height, width])
+    for x in xrange(width):
+        for y in xrange(height):
+            if RD.random() < initProb:
+                state = 2
+            else:
+                state = 1
+            config[y, x] = state
+
+    nextConfig = SP.zeros([height, width])
+
+def draw():
+    PL.cla()
+    PL.pcolor(config, vmin = 0, vmax = 2, cmap = PL.cm.jet)
+    PL.axis('image')
+    PL.title('t = ' + str(time))
+```
+
 _Provide a high level, step-by-step description of your schedule during each "tick" of the model_
+
+```python
+def step():
+    global time, config, nextConfig
+
+    time += 1
+
+    for x in xrange(width):
+        for y in xrange(height):
+            state = config[y, x]
+            
+            if state == 0:
+                for dx in xrange(-1, 2):
+                    for dy in xrange(-1, 2):
+                        if 1 < y+dy%height < ((height * 2) - 2): #there has to be a better way to create fixed boundary
+                            if 1 < x+dx%width < ((width * 2) - 2):
+                                if config[(y+dy)%height, (x+dx)%width] == 1:
+                                    if RD.random() < recoveryRate:
+                                        state = 1
+                                 elif config[(y+dy)%height, (x+dx)%width] == 2: #time order issue, should recovering be more susceptible?
+                                    if RD.random() < blightRate:
+                                        state = 2
+                                
+            elif state == 1:
+                for dx in xrange(-1, 2):
+                    for dy in xrange(-1, 2):
+                        if 1 < y+dy%height < ((height * 2) - 2):
+                            if 1 < x+dx%width < ((width * 2) - 2):
+                                if config[(y+dy)%height, (x+dx)%width] == 2:
+                                    if RD.random() < blightRate:
+                                        state = 2
+                                
+            else:
+                state = 0 #blighted shouldn't transition immediately to recovering
+
+            nextConfig[y, x] = state
+
+    config, nextConfig = nextConfig, config
+```
 
 &nbsp; 
 
 ### 5) Assessment and Outcome Measures
 
-_What quantitative metrics and/or qualitative features will you use to assess your model outcomes?_
-
-I am most interested in seeing how blight diffuses and clusters in the environment.  
+I am most interested in seeing how blight diffuses and clusters in the environment. I need to figure out a better way to measure this objectively.  
 
 &nbsp; 
 
 ### 6) Parameter Sweep
 
-_What parameters are you most interested in sweeping through? What value ranges do you expect to look at for your analysis?_
+I think this is referring to what parameters will be adjusted when testing the model.  This would be blightRate and regrowthRate - the rates of spread of and recovery from blight.  Based on early runs, their realistic range is relatively small, potentially between 0.0 and 0.2 for each.  I'll push that a little bit wider to ensure comprehensiveness.  Any more blight and the city becomes an untamed disaster zone, and faster recovery just isn't feasible.
